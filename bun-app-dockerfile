@@ -1,0 +1,28 @@
+# Use node image
+FROM oven/bun:latest
+
+# Change the working dir from /src to /root/app
+WORKDIR /root/app
+
+# Copy package.json and package-lock.json to /app
+COPY docker-bun/package*.json /root/app
+
+# Install dependencies
+RUN bun install
+
+# Copy the rest of project files to image
+COPY docker-bun /root/app
+## From _data to /root/_data
+COPY _data /root/_data
+## From lib to /root/lib
+COPY lib /root/lib
+## From utils to /root/utils
+COPY utils /root/utils
+
+# Expose application at PORT
+EXPOSE 3300
+
+RUN pwd
+
+# Start the app
+CMD ["bun", "src/index.js"]
