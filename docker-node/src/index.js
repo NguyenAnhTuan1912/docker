@@ -8,7 +8,7 @@ import { Utils } from "../../utils/index.mjs";
 import Data from "../../_data/db.json" with { type: "json" };
 
 const settings = {
-  host: "127.0.0.1",
+  host: "0.0.0.0",
   port: 3000
 };
 
@@ -25,9 +25,12 @@ app.get("/", (req, res) => {
 // Get users
 app.get("/users", (req, res) => {
   return Utils.Error.handleResponseError(app, res, function(o) {
-    const { limit = 10, skip = 0, name, username, email, company } = req.query;
+    const { name, username, email, company } = req.query;
 
     const nameRegExp = new RegExp(name, "i");
+    const
+      limit = req.query.limit ? parseInt(req.query.limit) : 10,
+      skip = req.query.skip ? parseInt(req.query.skip) : 0;
 
     const
       result = [],
@@ -36,26 +39,26 @@ app.get("/users", (req, res) => {
     for (let i = skip; i < N; i++) {
       if(hasCondition) {
         if (name && nameRegExp.test(Data.users[i].name)) {
-          result.push(Data.users[i]);
+          Data.users[i] && result.push(Data.users[i]);
         }
 
         if (username && Data.users[i].username === username) {
-          result.push(Data.users[i]);
+          Data.users[i] && result.push(Data.users[i]);
         }
 
         if (email && Data.users[i].email === email) {
-          result.push(Data.users[i]);
+          Data.users[i] && result.push(Data.users[i]);
         }
 
         if (company && Data.users[i].company.name === company) {
-          result.push(Data.users[i]);
+          Data.users[i] && result.push(Data.users[i]);
         }
 
         if (result.length < limit && N < Data.users.length) {
           N += 1;
         }
       } else
-        result.push(Data.users[i]);
+        Data.users[i] && result.push(Data.users[i]);
     }
 
     o.data = result;

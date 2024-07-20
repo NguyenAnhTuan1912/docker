@@ -1,0 +1,19 @@
+version: '3'
+services:
+  # Build node app
+  node-app:
+    build:
+      context: .
+      dockerfile: node-app-dockerfile
+    container_name: node-app
+    ports:
+      - "3000:3000"
+
+  # Build bun app
+  bun-app:
+    build:
+      context: .
+      dockerfile: bun-app-dockerfile
+    container_name: bun-app
+    ports:
+      - "3300:3300"

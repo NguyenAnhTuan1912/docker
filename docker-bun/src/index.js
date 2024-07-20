@@ -8,7 +8,7 @@ import { Utils } from "../../utils/index.mjs";
 import Data from "../../_data/db.json" with { type: "json" };
 
 const settings = {
-  host: "127.0.0.1",
+  host: "0.0.0.0",
   port: 3300
 };
 
@@ -26,9 +26,12 @@ app.get("/", (ctx) => {
 // Get albums
 app.get("/albums", (ctx) => {
   return Utils.Error.handleResponseError(app, ctx, function(o) {
-    const { limit = 10, skip = 0, title } = ctx.req.query();
+    const { title } = ctx.req.query();
 
     const titleRegExp = new RegExp(title, "i");
+    const
+      limit = req.query.limit ? parseInt(req.query.limit) : 10,
+      skip = req.query.skip ? parseInt(req.query.skip) : 0;
 
     const
       result = [],
@@ -37,14 +40,14 @@ app.get("/albums", (ctx) => {
     for (let i = skip; i < N; i++) {
       if(hasCondition) {
         if (title && titleRegExp.test(Data.albums[i].title)) {
-          result.push(Data.albums[i]);
+          Data.users[i] && result.push(Data.users[i]);
         }
 
         if (result.length < limit && N < Data.albums.length) {
           N += 1;
         }
       } else
-        result.push(Data.albums[i]);
+        Data.users[i] && result.push(Data.users[i]);
     }
 
     o.data = result;
@@ -68,6 +71,7 @@ app.get("/albums/:id", (ctx) => {
 
 Bun.serve({
   port: settings.port,
+  hostname: settings.host,
   fetch: app.fetch
 });
 
